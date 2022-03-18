@@ -3,6 +3,7 @@
 ##imports###
 ############
 import mediapipe
+import py
 import pygame
 import cv2
 from HandDetector import HandDetector
@@ -27,8 +28,10 @@ homeImgPre = pygame.image.load("Assets/StartScreen.png")
 homeImg = pygame.transform.scale(homeImgPre, (WIDTH, HEIGHT))
 
 TanImgPre = pygame.image.load("Assets\TanDemo.png")
-TanImg = pygame.transform.scale(TanImgPre, (WIDTH/2, HEIGHT/2))
+TanImg = pygame.transform.scale(TanImgPre, (800, 800))
 
+correctImgPre = pygame.image.load("Assets\Correct.png")
+correctImg = pygame.transform.scale(correctImgPre, (800, 850))
 
 ######################
 ###HELPER FUNCTIONS##
@@ -42,7 +45,7 @@ def mapToNewRange(val, inputMin, inputMax, outputMin, outputMax):
 
 def main():
     gameStages = ["home", "demo", "challenge", "instructions"]
-    curStage = gameStages[1]
+    curStage = gameStages[0]
     correctGesture = False 
 
     # make a hand detector
@@ -94,7 +97,7 @@ def main():
             #HANDLES COLOR TAN
             # 8 12 16 20 are below 9
             if curColor == colorsList[0]:
-                WINDOW.blit(TanImg, (-125, -75))
+                WINDOW.blit(TanImg, (-225, -225))
                 joints = [8, 12, 16, 20]
                 numJointsDown = 0
                 
@@ -116,6 +119,7 @@ def main():
 
                     if correctGesture:
                         WINDOW.fill((210,180,140))
+                        WINDOW.blit(correctImg, (195, -25))
 
             #HANDLES COLOR BLUE
                 
