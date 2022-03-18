@@ -23,8 +23,8 @@ class HandDetector:
         self.capture = cv2.VideoCapture(0)
 
         #### setting parameters for the webcam capture
-        self.capture.set(3, 640) # the width of the window
-        self.capture.set(4, 480) # height of the window
+        self.capture.set(3, 320) # the width of the window
+        self.capture.set(4, 240) # height of the window
 
         # getting hand identification models
         self.mpHands = mp.solutions.hands

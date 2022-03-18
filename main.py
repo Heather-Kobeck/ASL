@@ -20,10 +20,14 @@ WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 # name the game window
 pygame.display.set_caption("ASL Learning Game")
 
+
+
 # Image Loading 
 homeImgPre = pygame.image.load("Assets/StartScreen.png")
 homeImg = pygame.transform.scale(homeImgPre, (WIDTH, HEIGHT))
 
+TanImgPre = pygame.image.load("Assets\TanDemo.png")
+TanImg = pygame.transform.scale(TanImgPre, (WIDTH/2, HEIGHT/2))
 
 
 ######################
@@ -33,17 +37,13 @@ homeImg = pygame.transform.scale(homeImgPre, (WIDTH, HEIGHT))
 def mapToNewRange(val, inputMin, inputMax, outputMin, outputMax):
     return outputMin + ((outputMax - outputMin) / (inputMax - inputMin)) * (val - inputMin)
 
-def handleMouse ():
-    left, middle, right = pygame.mouse.get_pressed()
- 
-    if left:
-        print("Left Mouse Key is being pressed")
     
 
 
 def main():
     gameStages = ["home", "demo", "challenge", "instructions"]
-    curStage = gameStages[0]
+    curStage = gameStages[1]
+    correctGesture = False 
 
     # make a hand detector
     handDetector = HandDetector()
@@ -82,23 +82,47 @@ def main():
         if curStage == "demo":
             WINDOW.fill((0,0,0))
 
-            lettersList = ["a","b","c","d"]
-            curletter = lettersList[0]
+            colorsList = ["tan","blue","red","purple","green"]
+            curColor = colorsList[0]
+            
 
             ### HAND DETECTION ###
             # update the webcam feed and hand tracker calculations
             handDetector.update()
 
-            # if there is at least one hand seen, then
-            # print out the landmark positions
-            if len(handDetector.landmarkDictionary) > 0:
-                print(handDetector.landmarkDictionary[0][0][0])
 
-            
-            if curletter == lettersList[0]:
-               x = handDetector.landmarkDictionary[0][0][1]
-               print(x)
-               
+            #HANDLES COLOR TAN
+            # 8 12 16 20 are below 9
+            if curColor == colorsList[0]:
+                WINDOW.blit(TanImg, (-125, -75))
+                joints = [8, 12, 16, 20]
+                numJointsDown = 0
+                
+                # if there is at least one hand seen, then
+                # print out the landmark positions
+                if len(handDetector.landmarkDictionary) > 0:
+                    # print(handDetector.landmarkDictionary[0][0][0])
+                    for i in joints:
+                        if handDetector.landmarkDictionary[0][i][1] > handDetector.landmarkDictionary[0][9][1] and handDetector.landmarkDictionary[0][i - 2][1] > handDetector.landmarkDictionary[0][4][1]  :
+                            numJointsDown += 1
+                        else:
+                            numJointsDown -= 1
+
+                    if numJointsDown == len(joints) and handDetector.landmarkDictionary[0][4][0] <= handDetector.landmarkDictionary[0][7][0]:
+                        correctGesture = True
+                    else: 
+                        correctGesture = False
+                
+
+                    if correctGesture:
+                        WINDOW.fill((210,180,140))
+
+            #HANDLES COLOR BLUE
+                
+
+
+
+                        
            
         
         ########CHALLENGE MODE########
