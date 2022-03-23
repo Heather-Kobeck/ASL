@@ -2,16 +2,24 @@
 ############
 ##imports###
 ############
+from tracemalloc import start
 import mediapipe
+from numpy import True_
 import py
 import pygame
 import cv2
+import time
 from HandDetector import HandDetector
 
 
 ######################
 ####PYGAME SETUP######
 ######################
+pygame.init()
+
+#### setup up fonts ####
+font = pygame.font.Font('freesansbold.ttf', 32)
+
 
 # Define the size of the game window
 WIDTH = 1200
@@ -47,6 +55,7 @@ def main():
     gameStages = ["home", "demo", "challenge", "instructions"]
     curStage = gameStages[0]
     correctGesture = False 
+    updateTime = True
 
     # make a hand detector
     handDetector = HandDetector()
@@ -60,7 +69,11 @@ def main():
 
     # loop through every frame of the video and show it (stops when you reach the end of the video)
     # this while loops through the game and the video feed
+    colorsList = ["Tan","Blue","Red","Purple","Green"]
+    curColor = colorsList[0]
+
     while running == True:
+        clock.tick(60)
 
         ########HOME SCREEN########
 
@@ -85,9 +98,7 @@ def main():
         if curStage == "demo":
             WINDOW.fill((0,0,0))
 
-            colorsList = ["tan","blue","red","purple","green"]
-            curColor = colorsList[0]
-            
+           
 
             ### HAND DETECTION ###
             # update the webcam feed and hand tracker calculations
@@ -98,6 +109,9 @@ def main():
             # 8 12 16 20 are below 9
             if curColor == colorsList[0]:
                 WINDOW.blit(TanImg, (-225, -225))
+                text = "Use Your Left Hand to Sign the Color " + curColor
+                displayText = font.render(text, True, (255,0,255))
+                WINDOW.blit(displayText, (310, 50))
                 joints = [8, 12, 16, 20]
                 numJointsDown = 0
                 
@@ -113,21 +127,61 @@ def main():
 
                     if numJointsDown == len(joints) and handDetector.landmarkDictionary[0][4][0] <= handDetector.landmarkDictionary[0][7][0]:
                         correctGesture = True
+                        if(updateTime):
+                            startTime = time.time()
+                            updateTime = False
+                    else: 
+                        correctGesture = False
+                        updateTime = True
+                
+
+                    if correctGesture:
+                        inc = 2
+                        curTime = time.time()
+                        WINDOW.fill((210,180,140))
+                        WINDOW.blit(correctImg, (195, -25))
+
+                        ## forces the program to wait for a solid 2 seconds before allowing next stage ##
+                        if(curTime - startTime > inc):
+                            curColor = colorsList[1]
+                        
+
+
+            #HANDLES COLOR BLUE
+            if curColor == colorsList[1]:
+                ## setup from previous stage ##
+                correctGesture = False 
+                updateTime = True
+
+
+                WINDOW.fill((0,0,0))
+                text = "Use Your Left Hand to Sign the Color " + curColor
+                displayText = font.render(text, True, (255,0,255))
+                WINDOW.blit(displayText, (310, 50))
+
+                joints = [8, 12, 16, 20]
+                numJointsUp = 0
+
+                if len(handDetector.landmarkDictionary) > 0:
+                    print(handDetector.landmarkDictionary[0][0][0])
+
+                    for i in joints:
+                        if handDetector.landmarkDictionary[0][i][1] < handDetector.landmarkDictionary[0][9][1] and handDetector.landmarkDictionary[0][i - 2][1] < handDetector.landmarkDictionary[0][4][1]  :
+                            numJointsUp += 1
+                        else:
+                            numJointsUp -= 1
+
+                    if numJointsUp == len(joints) and handDetector.landmarkDictionary[0][4][0] <= handDetector.landmarkDictionary[0][7][0]:
+                        correctGesture = True
                     else: 
                         correctGesture = False
                 
 
                     if correctGesture:
-                        WINDOW.fill((210,180,140))
+                        WINDOW.fill((10,50,150))
                         WINDOW.blit(correctImg, (195, -25))
+                    
 
-            #HANDLES COLOR BLUE
-                
-
-
-
-                        
-           
         
         ########CHALLENGE MODE########
         if curStage == "challenge":
