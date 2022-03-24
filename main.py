@@ -2,9 +2,7 @@
 ############
 ##imports###
 ############
-from tracemalloc import start
 import mediapipe
-from numpy import True_
 import py
 import pygame
 import cv2
@@ -37,6 +35,9 @@ homeImg = pygame.transform.scale(homeImgPre, (WIDTH, HEIGHT))
 
 TanImgPre = pygame.image.load("Assets\TanDemo.png")
 TanImg = pygame.transform.scale(TanImgPre, (800, 800))
+
+BlueImgPre = pygame.image.load("Assets\BlueDemo.png")
+BlueImg = pygame.transform.scale(BlueImgPre,(450,450))
 
 correctImgPre = pygame.image.load("Assets\Correct.png")
 correctImg = pygame.transform.scale(correctImgPre, (800, 850))
@@ -105,7 +106,7 @@ def main():
             handDetector.update()
 
 
-            #HANDLES COLOR TAN
+            ########### HANDLES COLOR TAN #############
             # 8 12 16 20 are below 9
             if curColor == colorsList[0]:
                 WINDOW.blit(TanImg, (-225, -225))
@@ -144,17 +145,16 @@ def main():
                         ## forces the program to wait for a solid 2 seconds before allowing next stage ##
                         if(curTime - startTime > inc):
                             curColor = colorsList[1]
+                            updateTime = True
                         
 
 
-            #HANDLES COLOR BLUE
+            ##########HANDLES COLOR BLUE ################
             if curColor == colorsList[1]:
                 ## setup from previous stage ##
                 correctGesture = False 
-                updateTime = True
-
-
                 WINDOW.fill((0,0,0))
+                WINDOW.blit(BlueImg, (-175, -90))
                 text = "Use Your Left Hand to Sign the Color " + curColor
                 displayText = font.render(text, True, (255,0,255))
                 WINDOW.blit(displayText, (310, 50))
@@ -163,23 +163,44 @@ def main():
                 numJointsUp = 0
 
                 if len(handDetector.landmarkDictionary) > 0:
-                    print(handDetector.landmarkDictionary[0][0][0])
-
+                    j = 1
                     for i in joints:
-                        if handDetector.landmarkDictionary[0][i][1] < handDetector.landmarkDictionary[0][9][1] and handDetector.landmarkDictionary[0][i - 2][1] < handDetector.landmarkDictionary[0][4][1]  :
-                            numJointsUp += 1
-                        else:
-                            numJointsUp -= 1
+                        if handDetector.landmarkDictionary[0][i][1] < handDetector.landmarkDictionary[0][9][1] and handDetector.landmarkDictionary[0][i - 2][1] < handDetector.landmarkDictionary[0][4][1]:
 
-                    if numJointsUp == len(joints) and handDetector.landmarkDictionary[0][4][0] <= handDetector.landmarkDictionary[0][7][0]:
+                            if abs(handDetector.landmarkDictionary[0][8][2] - handDetector.landmarkDictionary[0][8][2]) < 2 :
+                                 numJointsUp += 1
+                            else:
+                                 numJointsUp -= 1
+
+                    if numJointsUp == len(joints) and handDetector.landmarkDictionary[0][4][0] <= handDetector.landmarkDictionary[0][7][0] and handDetector.landmarkDictionary[0][5][2] - handDetector.landmarkDictionary[0][17][2] > 8 :
                         correctGesture = True
+                        if(updateTime):
+                            startTime = time.time()
+                            updateTime = False
                     else: 
                         correctGesture = False
                 
 
                     if correctGesture:
+                        inc = 2
+                        curTime = time.time()
                         WINDOW.fill((10,50,150))
                         WINDOW.blit(correctImg, (195, -25))
+
+                        ## forces the program to wait for a solid 2 seconds before allowing next stage ##
+                        if(curTime - startTime > inc):
+                            curColor = colorsList[2]
+                            updateTime = True
+
+        ########### HANDLES COLOR RED #############
+            if(curColor == colorsList[2]):
+                ## setup from previous stage ##
+                correctGesture = False 
+                WINDOW.fill((0,0,0))
+                text = "Use Your Left Hand to Sign the Color " + curColor
+                displayText = font.render(text, True, (255,0,255))
+                WINDOW.blit(displayText, (310, 50))
+
                     
 
         
