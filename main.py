@@ -39,6 +39,9 @@ TanImg = pygame.transform.scale(TanImgPre, (800, 800))
 BlueImgPre = pygame.image.load("Assets\BlueDemo.png")
 BlueImg = pygame.transform.scale(BlueImgPre,(450,450))
 
+RedImgPre = pygame.image.load("Assets\RedDemo.png")
+RedImg = pygame.transform.scale(RedImgPre,(350,350))
+
 correctImgPre = pygame.image.load("Assets\Correct.png")
 correctImg = pygame.transform.scale(correctImgPre, (800, 850))
 
@@ -197,9 +200,50 @@ def main():
                 ## setup from previous stage ##
                 correctGesture = False 
                 WINDOW.fill((0,0,0))
+                WINDOW.blit(RedImg, (-50, -25))
                 text = "Use Your Left Hand to Sign the Color " + curColor
                 displayText = font.render(text, True, (255,0,255))
                 WINDOW.blit(displayText, (310, 50))
+
+                 # if there is at least one hand seen, then
+                # print out the landmark positions
+
+                joints = [12, 16, 20]
+                numJointsDown = 0
+
+                if len(handDetector.landmarkDictionary) > 0:
+                    # print(handDetector.landmarkDictionary[0][0][0])
+                    for i in joints:
+                        if handDetector.landmarkDictionary[0][i][1] > handDetector.landmarkDictionary[0][i -2][1]:
+                            numJointsDown += 1
+                        else:
+                            numJointsDown -= 1
+
+                    if numJointsDown == len(joints) and handDetector.landmarkDictionary[0][8][1] <= handDetector.landmarkDictionary[0][6][1]:
+                        if  abs(handDetector.landmarkDictionary[0][3][0] - handDetector.landmarkDictionary[0][5][0]) < 15:
+                            correctGesture = True
+                            if(updateTime):
+                                startTime = time.time()
+                                updateTime = False
+                    else: 
+                        correctGesture = False
+                        updateTime = True
+                
+
+                    if correctGesture:
+                        inc = 2
+                        curTime = time.time()
+                        WINDOW.fill((255,40,40))
+                        WINDOW.blit(correctImg, (195, -25))
+
+                        ## forces the program to wait for a solid 2 seconds before allowing next stage ##
+                        if(curTime - startTime > inc):
+                            
+                            curColor = colorsList[3]
+                            updateTime = True
+                        
+
+
 
                     
 
