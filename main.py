@@ -220,7 +220,7 @@ def main():
                             numJointsDown -= 1
 
                     if numJointsDown == len(joints) and handDetector.landmarkDictionary[0][8][1] <= handDetector.landmarkDictionary[0][6][1]:
-                        if  abs(handDetector.landmarkDictionary[0][3][0] - handDetector.landmarkDictionary[0][5][0]) < 15:
+                        if  abs(handDetector.landmarkDictionary[0][3][0] - handDetector.landmarkDictionary[0][5][0]) < 15 and  handDetector.landmarkDictionary[0][5][0] < handDetector.landmarkDictionary[0][17][0] :
                             correctGesture = True
                             if(updateTime):
                                 startTime = time.time()
