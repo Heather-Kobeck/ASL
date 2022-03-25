@@ -12,7 +12,7 @@ import pygame
 class HandDetector:
 
 
-    def __init__(self, a_max_num_hands=1, a_min_detection_confidence=0.5) -> None:
+    def __init__(self, a_max_num_hands=1, a_min_detection_confidence=0.25) -> None:
         """Constuctor
 
         Args:
