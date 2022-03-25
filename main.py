@@ -51,6 +51,8 @@ YellowImg = pygame.transform.scale(YellowImgPre, (350,350))
 
 WinIMG = pygame.image.load("Assets\win.png")
 
+Instruct = pygame.image.load("Assets\Instruct.png")
+
 correctImgPre = pygame.image.load("Assets\Correct.png")
 correctImg = pygame.transform.scale(correctImgPre, (800, 850))
 
@@ -598,7 +600,15 @@ def main():
 
         if curStage == gameStages[3]:
             WINDOW.fill((0,0,0))
-            handDetector.update()  
+            print("hi")
+            WINDOW.blit(Instruct,(0,0))
+
+            ## mouse detection for back button ##
+            if pygame.mouse.get_pos()[0] > 25 and pygame.mouse.get_pos()[1] > 650 and pygame.mouse.get_pos()[0] < 300 and  pygame.mouse.get_pos()[1] < 850:
+                    left, middle, right = pygame.mouse.get_pressed()
+                    if left:
+                        curStage = gameStages[0]
+             
             
 
         ########### WIN SCREEN ###########
